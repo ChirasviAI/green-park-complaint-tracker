@@ -214,12 +214,44 @@
     });
 
     document.getElementById("complaintForm")
-    .addEventListener("submit", function(event) {
-        event.preventDefault();
+.addEventListener("submit", function(event) {
+    event.preventDefault();
 
-        document.getElementById("message").textContent =
-            "Form design completed! Database connection is our next step.";
-    });
+    const complaintID = "GPC-" +
+        new Date().toISOString().slice(0,10).replaceAll("-", "") +
+        "-" + Math.random().toString(36)
+        .substring(2,8).toUpperCase();
+
+    const complaint = {
+        id: complaintID,
+        name: document.getElementById("name").value,
+        location: document.getElementById("location").value,
+        category: document.getElementById("category").value,
+        description: document.getElementById("description").value,
+        status: "Pending",
+        date: new Date().toLocaleString()
+    };
+
+    const complaints = JSON.parse(
+        localStorage.getItem("complaints") || "[]"
+    );
+
+    complaints.push(complaint);
+
+    localStorage.setItem(
+        "complaints",
+        JSON.stringify(complaints)
+    );
+
+    document.getElementById("message").innerHTML =
+        "<h3>Complaint submitted successfully!</h3>" +
+        "<p>Your Complaint ID:</p>" +
+        "<h2>" + complaintID + "</h2>" +
+        "<p>Save this ID for tracking your complaint.</p>";
+
+    this.reset();
+    document.getElementById("preview").innerHTML = "";
+});
 </script>
 
 </body>
