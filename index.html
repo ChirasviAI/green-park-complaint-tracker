@@ -182,7 +182,17 @@
 
 <section class="container" id="track">
     <h2>🔍 Track Complaint</h2>
-    <p>Our complaint tracking feature will be added here.</p>
+
+    <label>Enter Complaint ID</label>
+
+    <input type="text" id="trackID"
+        placeholder="Enter your Complaint ID">
+
+    <button onclick="trackComplaint()">
+        Track Complaint
+    </button>
+
+    <div id="trackResult"></div>
 </section>
 
 <footer>
@@ -252,6 +262,30 @@
     this.reset();
     document.getElementById("preview").innerHTML = "";
 });
+    function trackComplaint() {
+    const id = document.getElementById("trackID").value.trim();
+
+    const complaints = JSON.parse(
+        localStorage.getItem("complaints") || "[]"
+    );
+
+    const complaint = complaints.find(item => item.id === id);
+
+    const result = document.getElementById("trackResult");
+
+    if (complaint) {
+        result.innerHTML = `
+            <h3>Complaint Found!</h3>
+            <p>Complaint ID: ${complaint.id}</p>
+            <p>Location: ${complaint.location}</p>
+            <p>Category: ${complaint.category}</p>
+            <p>Status: ${complaint.status}</p>
+            <p>Date: ${complaint.date}</p>
+        `;
+    } else {
+        result.textContent = "Complaint not found. Check your ID.";
+    }
+}
 </script>
 
 </body>
