@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Green Park Care</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f1f8f2;
+            color: #263b2b;
+        }
+
+        header {
+            background: #176b3a;
+            color: white;
+            text-align: center;
+            padding: 22px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 25px auto;
+            padding: 20px;
+        }
+
+        .summary {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            flex: 1;
+            min-width: 140px;
+            text-align: center;
+            box-shadow: 0 2px 6px #ccc;
+        }
+
+        .card h2 {
+            color: #176b3a;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #176b3a;
+            color: white;
+        }
+
+        select {
+            padding: 7px;
+            border-radius: 5px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 20px;
+        }
+
+        @media(max-width: 600px) {
+            .container {
+                overflow-x: auto;
+            }
+            table {
+                min-width: 700px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>🌳 Green Park & Garden Care</h1>
+    <h2>Admin Dashboard</h2>
+    <p>Manage and monitor citizen complaints</p>
+</header>
+
+<div class="container">
+
+    <h2>Dashboard Overview</h2>
+
+    <div class="summary">
+        <div class="card">
+            <h3>Total Complaints</h3>
+            <h2 id="total">0</h2>
+        </div>
+
+        <div class="card">
+            <h3>Pending</h3>
+            <h2 id="pending">0</h2>
+        </div>
+
+        <div class="card">
+            <h3>In Progress</h3>
+            <h2 id="progress">0</h2>
+        </div>
+
+        <div class="card">
+            <h3>Resolved</h3>
+            <h2 id="resolved">0</h2>
+        </div>
+    </div>
+
+    <h2>Citizen Complaints</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Complaint ID</th>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+
+        <tbody id="complaintTable">
+        </tbody>
+    </table>
+
+    <p id="emptyMessage" class="empty"></p>
+
+</div>
+
+<script>
+
+function loadComplaints() {
+
+    const complaints = JSON.parse(
+        localStorage.getItem("complaints") || "[]"
+    );
+
+    const table = document.getElementById("complaintTable");
+
+    table.innerHTML = "";
+
+    let pending = 0;
+    let progress = 0;
+    let resolved = 0;
+
+    complaints.forEach((complaint, index) => {
+
+        if (complaint.status === "Pending") pending++;
+        if (complaint.status === "In Progress") progress++;
+        if (complaint.status === "Resolved") resolved++;
+
+        const row = document.createElement("tr");
+
+        const values = [
+            complaint.id,
+            complaint.name,
+            complaint.location,
+            complaint.category,
+            complaint.description,
+            complaint.date
+        ];
+
+        values.forEach(value => {
+            const cell = document.createElement("td");
+            cell.textContent = value || "-";
+            row.appendChild(cell);
+        });
+
+        const statusCell = document.createElement("td");
+        const select = document.createElement("select");
+
+        ["Pending", "In Progress", "Resolved"].forEach(status => {
+            const option = document.createElement("option");
+            option.value = status;
+            option.textContent = status;
+
+            if (complaint.status === status) {
+                option.selected = true;
+            }
+
+            select.appendChild(option);
+        });
+
+        select.addEventListener("change", function() {
+            complaints[index].status = this.value;
+
+            localStorage.setItem(
+                "complaints",
+                JSON.stringify(complaints)
+            );
+
+            loadComplaints();
+        });
+
+        statusCell.appendChild(select);
+        row.appendChild(statusCell);
+        table.appendChild(row);
+    });
+
+    document.getElementById("total").textContent = complaints.length;
+    document.getElementById("pending").textContent = pending;
+    document.getElementById("progress").textContent = progress;
+    document.getElementById("resolved").textContent = resolved;
+
+    document.getElementById("emptyMessage").textContent =
+        complaints.length === 0
+        ? "No complaints available yet."
+        : "";
+}
+
+loadComplaints();
+
+</script>
+
+</body>
+</html>
