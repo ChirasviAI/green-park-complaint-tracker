@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Green Park & Garden Care</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f7f0;
+            color: #263c2c;
+        }
+
+        header {
+            background: #176b3a;
+            color: white;
+            text-align: center;
+            padding: 25px 15px;
+        }
+
+        header h1 {
+            font-size: 30px;
+        }
+
+        nav {
+            background: #104d2d;
+            padding: 16px;
+            text-align: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 15px;
+            font-weight: bold;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 65px 20px;
+            background: #d8f0d8;
+        }
+
+        .hero h2 {
+            color: #176b3a;
+            font-size: 38px;
+            margin-bottom: 15px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: 35px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 3px 12px #00000015;
+        }
+
+        h2 {
+            color: #176b3a;
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            margin: 16px 0 8px;
+            font-weight: bold;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #bbb;
+            border-radius: 7px;
+            font-size: 16px;
+        }
+
+        button {
+            background: #176b3a;
+            color: white;
+            border: none;
+            padding: 14px 22px;
+            border-radius: 7px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #104d2d;
+        }
+
+        footer {
+            background: #104d2d;
+            color: white;
+            text-align: center;
+            padding: 22px;
+            margin-top: 40px;
+        }
+
+        #preview img, #preview video {
+            max-width: 100%;
+            max-height: 220px;
+            margin: 10px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>🌳 Green Park & Garden Care</h1>
+    <p>Public Park and Garden Maintenance Complaint Tracker</p>
+</header>
+
+<nav>
+    <a href="#home">Home</a>
+    <a href="#complaint">Submit Complaint</a>
+    <a href="#track">Track Complaint</a>
+</nav>
+
+<section class="hero" id="home">
+    <h2>Keep Our Parks Clean and Green!</h2>
+    <p>
+        Help us maintain beautiful public parks and gardens.
+        Report problems and track your complaints easily.
+    </p>
+</section>
+
+<section class="container" id="complaint">
+    <h2>📝 Submit a Complaint</h2>
+
+    <form id="complaintForm">
+
+        <label>Your Name</label>
+        <input type="text" id="name" required
+               placeholder="Enter your name">
+
+        <label>Park Name / Location</label>
+        <input type="text" id="location" required
+               placeholder="Enter park name or location">
+
+        <label>Complaint Category</label>
+        <select id="category" required>
+            <option value="">Select category</option>
+            <option>Damaged Bench</option>
+            <option>Overflowing Dustbin</option>
+            <option>Damaged Playground</option>
+            <option>Water Leakage</option>
+            <option>Garden Maintenance</option>
+            <option>Other</option>
+        </select>
+
+        <label>Complaint Description</label>
+        <textarea id="description" rows="4" required
+                  placeholder="Describe the problem"></textarea>
+
+        <label>Upload Photos / Videos</label>
+        <input type="file" id="evidence"
+               accept="image/*,video/*" multiple>
+
+        <div id="preview"></div>
+
+        <button type="submit">Submit Complaint</button>
+
+    </form>
+    <p id="message"></p>
+</section>
+
+<section class="container" id="track">
+    <h2>🔍 Track Complaint</h2>
+    <p>Our complaint tracking feature will be added here.</p>
+</section>
+
+<footer>
+    <p>Green Park & Garden Care</p>
+    <p>Working Together for Cleaner and Greener Parks 🌱</p>
+</footer>
+
+<script>
+    const evidence = document.getElementById("evidence");
+    const preview = document.getElementById("preview");
+
+    evidence.addEventListener("change", function() {
+        preview.innerHTML = "";
+
+        Array.from(this.files).forEach(file => {
+            const url = URL.createObjectURL(file);
+
+            if (file.type.startsWith("image/")) {
+                const img = document.createElement("img");
+                img.src = url;
+                preview.appendChild(img);
+            } else if (file.type.startsWith("video/")) {
+                const video = document.createElement("video");
+                video.src = url;
+                video.controls = true;
+                preview.appendChild(video);
+            }
+        });
+    });
+
+    document.getElementById("complaintForm")
+    .addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        document.getElementById("message").textContent =
+            "Form design completed! Database connection is our next step.";
+    });
+</script>
+
+</body>
+</html>
