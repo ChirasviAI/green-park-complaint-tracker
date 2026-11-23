@@ -200,28 +200,114 @@
     <p>Working Together for Cleaner and Greener Parks 🌱</p>
 </footer>
 <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyAK8b_tmr3VhuFjZSgT4IwVecbpqi-M_Uk",
-    authDomain: "green-park-complaint-tracker.firebaseapp.com",
-    projectId: "green-park-complaint-tracker",
-    storageBucket: "green-park-complaint-tracker.firebasestorage.app",
-    messagingSenderId: "521073074369",
-    appId: "1:521073074369:web:ae1a490a5cd7e2c780b440",
-    measurementId: "G-52ZQKDQHYW"
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAK8b_tmr3VhuFjZSgT4IwVecbpqi-M_Uk",
+  authDomain: "green-park-complaint-tracker.firebaseapp.com",
+  projectId: "green-park-complaint-tracker",
+  storageBucket: "green-park-complaint-tracker.firebasestorage.app",
+  messagingSenderId: "521073074369",
+  appId: "1:521073074369:web:ae1a490a5cd7e2c780b440",
+  measurementId: "G-52ZQKDQHYW"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// SUBMIT COMPLAINT
+const form = document.getElementById("complaintForm");
+const message = document.getElementById("message");
+
+form.addEventListener("submit", async function(event) {
+  event.preventDefault();
+
+  message.textContent = "Submitting your complaint...";
+
+  const complaintID =
+    "GPC-" + Date.now();
+
+  const complaint = {
+    id: complaintID,
+    name: document.getElementById("name").value.trim(),
+    location: document.getElementById("location").value.trim(),
+    category: document.getElementById("category").value,
+    description: document.getElementById("description").value.trim(),
+    status: "Pending",
+    date: new Date().toLocaleString(),
+    createdAt: serverTimestamp()
   };
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
+  try {
+    await addDoc(collection(db, "complaints"), complaint);
 
+    message.textContent =
+      "Complaint submitted successfully! Your Complaint ID is: " + complaintID;
+
+    form.reset();
+    document.getElementById("preview").innerHTML = "";
+
+  } catch (error) {
+    console.error("Submission error:", error);
+    message.textContent =
+      "Submission failed: " + error.message;
+  }
+});
+
+// TRACK COMPLAINT
+const trackButton = document.querySelector("#track button");
+
+trackButton.addEventListener("click", async function() {
+  const id = document.getElementById("trackID").value.trim();
+  const result = document.getElementById("trackResult");
+
+  if (!id) {
+    result.textContent = "Please enter your Complaint ID.";
+    return;
+  }
+
+  result.textContent = "Searching...";
+
+  try {
+    const q = query(
+      collection(db, "complaints"),
+      where("id", "==", id)
+    );
+
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) {
+      result.textContent = "Complaint not found.";
+      return;
+    }
+
+    const data = snapshot.docs[0].data();
+
+    result.innerHTML = `
+      <h3>Complaint Details</h3>
+      <p><b>ID:</b> ${data.id}</p>
+      <p><b>Name:</b> ${data.name}</p>
+      <p><b>Location:</b> ${data.location}</p>
+      <p><b>Category:</b> ${data.category}</p>
+      <p><b>Description:</b> ${data.description}</p>
+      <p><b>Status:</b> ${data.status}</p>
+    `;
+
+  } catch (error) {
+    console.error("Tracking error:", error);
+    result.textContent = "Unable to track: " + error.message;
+  }
+});
+</script>
 </body>
 </html>
